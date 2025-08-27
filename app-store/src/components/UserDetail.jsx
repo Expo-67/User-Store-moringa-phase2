@@ -7,14 +7,24 @@ const UserDetail = () => {
   const { id } = useParams();
   const { users, fetchUserById } = useUserStore();
   const [user, setUser] = useState(null);
+  //
+  const [loading, setLoading] = useState(true);
 
-  //   Fetch user from local store or API based on ID
+  // Fetch user details either from local store or API
   useEffect(() => {
     const localUser = users.find((u) => u.id === parseInt(id));
-    if (localUser) setUser(localUser);
-    else fetchUserById(id).then(setUser);
-  }, [id]);
+    if (localUser) {
+      setUser(localUser);
+      setLoading(false);
+    } else {
+      fetchUserById(id).then((data) => {
+        setUser(data);
+        setLoading(false);
+      });
+    }
+  }, [id, users, fetchUserById]);
 
+  if (loading) return <p>Loading user...</p>;
   if (!user) return <p>User not found</p>;
 
   return (
